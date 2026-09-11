@@ -106,9 +106,9 @@ public class MainActivity extends Activity {
         String js = "(function(){"
                 + "var m=document.querySelector('main');"
                 + "if(m){"
-                + "m.style.setProperty('transform','scale(0.95)','important');"
+                + "m.style.setProperty('transform','scale(0.70)','important');"
                 + "m.style.setProperty('transform-origin','top left','important');"
-                + "m.style.setProperty('width','105.263158%','important');"
+                + "m.style.removeProperty('width');"
                 + "}"
                 + "})();";
         view.evaluateJavascript(js, null);
