@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.view.WindowInsets;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
@@ -26,9 +28,18 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getWindow().setStatusBarColor(Color.BLACK);
+        getWindow().setNavigationBarColor(Color.BLACK);
+
+        FrameLayout root = new FrameLayout(this);
+        root.setBackgroundColor(Color.BLACK);
+
         webView = new WebView(this);
         webView.setBackgroundColor(Color.rgb(11, 15, 20));
-        setContentView(webView);
+        root.addView(webView, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        setContentView(root);
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -40,7 +51,7 @@ public class MainActivity extends Activity {
         // Keep the existing Mobile layout scale as close as possible.
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
-        settings.setTextZoom(85);
+        settings.setTextZoom(80);
 
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -69,7 +80,10 @@ public class MainActivity extends Activity {
                 bottom = insets.getSystemWindowInsetBottom();
             }
 
-            view.setPadding(0, top, 0, bottom);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) view.getLayoutParams();
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            view.setLayoutParams(lp);
             return insets;
         });
 
