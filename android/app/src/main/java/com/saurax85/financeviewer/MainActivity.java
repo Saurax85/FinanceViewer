@@ -156,3 +156,5 @@ public class MainActivity extends Activity {
         }
     }
 }
+
+// Real file update marker: force APK workflow to rebuild this exact source.
