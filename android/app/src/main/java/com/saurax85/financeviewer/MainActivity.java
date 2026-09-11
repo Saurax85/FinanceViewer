@@ -50,9 +50,9 @@ public class MainActivity extends Activity {
         // WebView text zoom does not reliably change the explicit CSS pixel
         // sizes used by FinanceViewer Mobile. Keep it neutral and apply a
         // deterministic CSS scale after the page has loaded.
-        settings.setUseWideViewPort(false);
-        settings.setLoadWithOverviewMode(false);
-        settings.setTextZoom(100);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setTextZoom(75);
 
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -95,28 +95,26 @@ public class MainActivity extends Activity {
         });
 
         webView.post(() -> webView.requestApplyInsets());
-        applyMobileScale(webView);
         webView.loadUrl(URL);
     }
 
     private void applyMobileScale(WebView view) {
-        // TEST ESTREMO: agisce direttamente sugli iframe presenti nella pagina.
-        // Se il Mobile è realmente dentro un iframe, questo deve ridurlo
-        // immediatamente senza toccare il menu/header della pagina esterna.
+        // Mobile structure: header -> main -> .content.
+        // CSS zoom recalculates layout at the smaller scale, unlike font-size
+        // overrides. The header/menu is deliberately untouched.
         String js = "(function(){"
-                + "var fs=document.querySelectorAll('iframe');"
-                + "for(var i=0;i<fs.length;i++){"
-                + "var f=fs[i];"
-                + "f.style.setProperty('transform','scale(0.30)','important');"
-                + "f.style.setProperty('transform-origin','top left','important');"
-                + "f.style.setProperty('width','200%','important');"
-                + "f.style.setProperty('height','200%','important');"
+                + "function apply(){"
+                + "var c=document.querySelector('main .content');"
+                + "if(!c)return;"
+                + "c.style.setProperty('zoom','0.96','important');"
+                + "c.style.setProperty('width','104.166667%','important');"
                 + "}"
+                + "apply();"
+                + "setTimeout(apply,500);"
+                + "setTimeout(apply,1500);"
+                + "setTimeout(apply,3000);"
                 + "})();";
         view.evaluateJavascript(js, null);
-        view.postDelayed(() -> view.evaluateJavascript(js, null), 500);
-        view.postDelayed(() -> view.evaluateJavascript(js, null), 1500);
-        view.postDelayed(() -> view.evaluateJavascript(js, null), 3000);
     }
 
     private void hideAppsScriptBanner(WebView view) {
