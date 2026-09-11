@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
         // deterministic CSS scale after the page has loaded.
         settings.setUseWideViewPort(false);
         settings.setLoadWithOverviewMode(false);
-        settings.setTextZoom(100);
+        settings.setTextZoom(50);
 
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
