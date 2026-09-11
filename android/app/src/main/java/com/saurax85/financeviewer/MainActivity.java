@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
                 + "var fs=document.querySelectorAll('iframe');"
                 + "for(var i=0;i<fs.length;i++){"
                 + "var f=fs[i];"
-                + "f.style.setProperty('transform','scale(0.50)','important');"
+                + "f.style.setProperty('transform','scale(0.30)','important');"
                 + "f.style.setProperty('transform-origin','top left','important');"
                 + "f.style.setProperty('width','200%','important');"
                 + "f.style.setProperty('height','200%','important');"
