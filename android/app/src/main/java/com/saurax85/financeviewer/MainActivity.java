@@ -50,8 +50,8 @@ public class MainActivity extends Activity {
         // WebView text zoom does not reliably change the explicit CSS pixel
         // sizes used by FinanceViewer Mobile. Keep it neutral and apply a
         // deterministic CSS scale after the page has loaded.
-        settings.setUseWideViewPort(true);
-        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(false);
+        settings.setLoadWithOverviewMode(false);
         settings.setTextZoom(100);
 
         CookieManager cookieManager = CookieManager.getInstance();
@@ -101,13 +101,13 @@ public class MainActivity extends Activity {
     private void applyMobileScale(WebView view) {
         // The Mobile page uses explicit px font sizes. CSS zoom changes the
         // actual rendered/layout scale, unlike WebView textZoom here.
-        // 0.85 is the requested next step down while keeping the layout intact.
+        // 0.80 is the next visual step down; disable WebView overview scaling so this is not cancelled out.
         String js = "(function(){"
                 + "var s=document.getElementById('financeviewer-apk-scale');"
                 + "if(!s){"
                 + "s=document.createElement('style');"
                 + "s.id='financeviewer-apk-scale';"
-                + "s.textContent='html{zoom:0.85!important;}';"
+                + "s.textContent='html{overflow-x:hidden!important;}body{zoom:0.80!important;width:125%!important;}';"
                 + "document.head.appendChild(s);"
                 + "}"
                 + "})();";
