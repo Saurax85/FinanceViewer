@@ -99,21 +99,20 @@ public class MainActivity extends Activity {
     }
 
     private void applyMobileScale(WebView view) {
-        // The page uses explicit px sizes. WebView textZoom/CSS zoom did not
-        // give a reliable visible change, so scale only the content container.
-        // The header/menu is outside .content and remains unchanged.
+        // Mobile structure: header -> main -> .content.
+        // CSS zoom recalculates layout at the smaller scale, unlike font-size
+        // overrides. The header/menu is deliberately untouched.
         String js = "(function(){"
                 + "function apply(){"
-                + "var c=document.querySelector('.content');"
+                + "var c=document.querySelector('main .content');"
                 + "if(!c)return;"
-                + "c.style.setProperty('transform','scale(0.95)','important');"
-                + "c.style.setProperty('transform-origin','top left','important');"
-                + "c.style.setProperty('width','105.263158%','important');"
+                + "c.style.setProperty('zoom','0.96','important');"
+                + "c.style.setProperty('width','104.166667%','important');"
                 + "}"
                 + "apply();"
-                + "setTimeout(apply,300);"
-                + "setTimeout(apply,1000);"
-                + "setTimeout(apply,2500);"
+                + "setTimeout(apply,500);"
+                + "setTimeout(apply,1500);"
+                + "setTimeout(apply,3000);"
                 + "})();";
         view.evaluateJavascript(js, null);
     }
