@@ -99,15 +99,14 @@ public class MainActivity extends Activity {
     }
 
     private void applyMobileScale(WebView view) {
-        // Keep the header/menu at the proven current size.
-        // Reduce only the content below the menu by one small step.
+        // Keep the header/menu completely unchanged.
+        // Scale only the page content below the header by a very small step.
+        // Using zoom on <main> changes the actual rendered layout, unlike
+        // font-size percentages on descendants with explicit px sizes.
         String js = "(function(){"
-                + "var s=document.getElementById('financeviewer-apk-content-scale');"
-                + "if(!s){"
-                + "s=document.createElement('style');"
-                + "s.id='financeviewer-apk-content-scale';"
-                + "s.textContent='.content *{font-size:92%!important;}';"
-                + "document.head.appendChild(s);"
+                + "var m=document.querySelector('main');"
+                + "if(m){"
+                + "m.style.setProperty('zoom','0.96','important');"
                 + "}"
                 + "})();";
         view.evaluateJavascript(js, null);
