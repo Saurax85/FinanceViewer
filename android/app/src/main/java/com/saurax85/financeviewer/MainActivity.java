@@ -100,9 +100,23 @@ public class MainActivity extends Activity {
     }
 
     private void applyMobileScale(WebView view) {
-        // Apps Script HtmlService uses an iframe sandbox. Apply scale at the
-        // WebView level rather than trying to alter the inner Mobile DOM.
-        view.setInitialScale(92);
+        // TEST ESTREMO: scala direttamente l'iframe HtmlService al 50%.
+        // Se questa modifica è visibile, abbiamo dimostrato che stiamo
+        // intervenendo sul livello corretto della pagina.
+        String js = "(function(){"
+                + "var fs=document.querySelectorAll('iframe');"
+                + "for(var i=0;i<fs.length;i++){"
+                + "var f=fs[i];"
+                + "f.style.setProperty('transform','scale(0.50)','important');"
+                + "f.style.setProperty('transform-origin','top left','important');"
+                + "f.style.setProperty('width','200%','important');"
+                + "f.style.setProperty('height','200%','important');"
+                + "}"
+                + "})();";
+        view.evaluateJavascript(js, null);
+        view.postDelayed(() -> view.evaluateJavascript(js, null), 500);
+        view.postDelayed(() -> view.evaluateJavascript(js, null), 1500);
+        view.postDelayed(() -> view.evaluateJavascript(js, null), 3000);
     }
 
     private void hideAppsScriptBanner(WebView view) {
