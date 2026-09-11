@@ -5,10 +5,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.view.WindowInsets;
+import android.widget.FrameLayout;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -48,10 +47,12 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
 
-        // Keep the existing Mobile layout scale as close as possible.
+        // WebView text zoom does not reliably change the explicit CSS pixel
+        // sizes used by FinanceViewer Mobile. Keep it neutral and apply a
+        // deterministic CSS scale after the page has loaded.
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
-        settings.setTextZoom(75);
+        settings.setTextZoom(100);
 
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -61,6 +62,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                applyMobileScale(view);
                 hideAppsScriptBanner(view);
             }
         });
@@ -70,9 +72,8 @@ public class MainActivity extends Activity {
         webView.setHorizontalScrollBarEnabled(false);
         webView.setHorizontalFadingEdgeEnabled(false);
 
-        // Android 15 / targetSdk 35 enforces edge-to-edge. Keep the
-        // FinanceViewer content below the status/camera area and above
-        // the navigation area, without changing Mobile.html.
+        // Android 15 / targetSdk 35 edge-to-edge: keep the content below
+        // the status/camera area and above the navigation area.
         webView.setOnApplyWindowInsetsListener((view, insets) -> {
             int top;
             int bottom;
@@ -97,9 +98,25 @@ public class MainActivity extends Activity {
         webView.loadUrl(URL);
     }
 
+    private void applyMobileScale(WebView view) {
+        // The Mobile page uses explicit px font sizes. CSS zoom changes the
+        // actual rendered/layout scale, unlike WebView textZoom here.
+        // 0.85 is the requested next step down while keeping the layout intact.
+        String js = "(function(){"
+                + "var s=document.getElementById('financeviewer-apk-scale');"
+                + "if(!s){"
+                + "s=document.createElement('style');"
+                + "s.id='financeviewer-apk-scale';"
+                + "s.textContent='html{zoom:0.85!important;}';"
+                + "document.head.appendChild(s);"
+                + "}"
+                + "})();";
+        view.evaluateJavascript(js, null);
+    }
+
     private void hideAppsScriptBanner(WebView view) {
         // Apps Script can inject a small warning banner above HtmlService pages.
-        // Try to remove only that banner; do not modify Mobile.html.
+        // Remove only that warning; do not modify Mobile.html.
         String js = "(function(){"
                 + "function hide(){"
                 + "var els=document.querySelectorAll('*');"
@@ -107,12 +124,22 @@ public class MainActivity extends Activity {
                 + "var e=els[i],t=(e.innerText||e.textContent||'').replace(/\\s+/g,' ').trim();"
                 + "if(t.indexOf('Questa applicazione è stata creata da un utente di Google Apps Script')!==-1){"
                 + "var r=e.getBoundingClientRect();"
-                + "if(r.top<100 && r.height<100){e.style.setProperty('display','none','important');"
+                + "if(r.top<120 && r.height<120){"
+                + "e.style.setProperty('display','none','important');"
                 + "if(e.parentElement && e.parentElement!==document.body){"
                 + "var p=e.parentElement,pr=p.getBoundingClientRect();"
-                + "if(pr.top<100 && pr.height<100){p.style.setProperty('display','none','important');}}}}}"
+                + "if(pr.top<120 && pr.height<120){"
+                + "p.style.setProperty('display','none','important');"
                 + "}"
-                + "hide();setTimeout(hide,300);setTimeout(hide,1000);setTimeout(hide,2500);"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                + "}"
+                + "hide();"
+                + "setTimeout(hide,300);"
+                + "setTimeout(hide,1000);"
+                + "setTimeout(hide,2500);"
                 + "})();";
         view.evaluateJavascript(js, null);
     }
