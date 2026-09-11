@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
         // deterministic CSS scale after the page has loaded.
         settings.setUseWideViewPort(false);
         settings.setLoadWithOverviewMode(false);
-        settings.setTextZoom(50);
+        settings.setTextZoom(100);
 
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -100,17 +100,15 @@ public class MainActivity extends Activity {
     }
 
     private void applyMobileScale(WebView view) {
-        // TEST ESTREMO: scala direttamente l'iframe HtmlService al 50%.
-        // Se questa modifica è visibile, abbiamo dimostrato che stiamo
-        // intervenendo sul livello corretto della pagina.
+        // TEST ESTREMO: riduce SOLO <main>, lasciando header/menu invariati.
+        // Se main contiene il contenuto Mobile, il cambiamento deve essere
+        // immediatamente evidente.
         String js = "(function(){"
-                + "var fs=document.querySelectorAll('iframe');"
-                + "for(var i=0;i<fs.length;i++){"
-                + "var f=fs[i];"
-                + "f.style.setProperty('transform','scale(0.50)','important');"
-                + "f.style.setProperty('transform-origin','top left','important');"
-                + "f.style.setProperty('width','200%','important');"
-                + "f.style.setProperty('height','200%','important');"
+                + "var m=document.querySelector('main');"
+                + "if(m){"
+                + "m.style.setProperty('transform','scale(0.50)','important');"
+                + "m.style.setProperty('transform-origin','top left','important');"
+                + "m.style.setProperty('width','200%','important');"
                 + "}"
                 + "})();";
         view.evaluateJavascript(js, null);
