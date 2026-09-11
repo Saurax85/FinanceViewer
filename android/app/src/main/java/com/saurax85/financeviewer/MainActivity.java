@@ -99,15 +99,15 @@ public class MainActivity extends Activity {
     }
 
     private void applyMobileScale(WebView view) {
-        // The Mobile page uses explicit px font sizes. CSS zoom changes the
-        // actual rendered/layout scale, unlike WebView textZoom here.
-        // 0.80 is the next visual step down; disable WebView overview scaling so this is not cancelled out.
+        // Keep the header/navigation at the exact Mobile size. Only the
+        // content below it is scaled down, because that is where the
+        // table/card text is wrapping differently from the Mobile version.
         String js = "(function(){"
                 + "var s=document.getElementById('financeviewer-apk-scale');"
                 + "if(!s){"
                 + "s=document.createElement('style');"
                 + "s.id='financeviewer-apk-scale';"
-                + "s.textContent='html{overflow-x:hidden!important;}body{zoom:0.80!important;width:125%!important;}';"
+                + "s.textContent='.content{zoom:0.80!important;width:125%!important;max-width:125%!important;}';"
                 + "document.head.appendChild(s);"
                 + "}"
                 + "})();";
