@@ -50,9 +50,9 @@ public class MainActivity extends Activity {
         // WebView text zoom does not reliably change the explicit CSS pixel
         // sizes used by FinanceViewer Mobile. Keep it neutral and apply a
         // deterministic CSS scale after the page has loaded.
-        settings.setUseWideViewPort(false);
-        settings.setLoadWithOverviewMode(false);
-        settings.setTextZoom(100);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setTextZoom(75);
 
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -99,15 +99,14 @@ public class MainActivity extends Activity {
     }
 
     private void applyMobileScale(WebView view) {
-        // Keep the header/navigation at the exact Mobile size. Only the
-        // content below it is scaled down, because that is where the
-        // table/card text is wrapping differently from the Mobile version.
+        // Keep the header/menu at the proven current size.
+        // Reduce only the content below the menu by one small step.
         String js = "(function(){"
-                + "var s=document.getElementById('financeviewer-apk-scale');"
+                + "var s=document.getElementById('financeviewer-apk-content-scale');"
                 + "if(!s){"
                 + "s=document.createElement('style');"
-                + "s.id='financeviewer-apk-scale';"
-                + "s.textContent='.content{zoom:0.80!important;width:125%!important;max-width:125%!important;}';"
+                + "s.id='financeviewer-apk-content-scale';"
+                + "s.textContent='.content *{font-size:94%!important;}';"
                 + "document.head.appendChild(s);"
                 + "}"
                 + "})();";
