@@ -100,15 +100,17 @@ public class MainActivity extends Activity {
     }
 
     private void applyMobileScale(WebView view) {
-        // TEST ESTREMO: riduce SOLO <main>, lasciando header/menu invariati.
-        // Se main contiene il contenuto Mobile, il cambiamento deve essere
-        // immediatamente evidente.
+        // TEST ESTREMO: agisce direttamente sugli iframe presenti nella pagina.
+        // Se il Mobile è realmente dentro un iframe, questo deve ridurlo
+        // immediatamente senza toccare il menu/header della pagina esterna.
         String js = "(function(){"
-                + "var m=document.querySelector('main');"
-                + "if(m){"
-                + "m.style.setProperty('transform','scale(0.70)','important');"
-                + "m.style.setProperty('transform-origin','top left','important');"
-                + "m.style.removeProperty('width');"
+                + "var fs=document.querySelectorAll('iframe');"
+                + "for(var i=0;i<fs.length;i++){"
+                + "var f=fs[i];"
+                + "f.style.setProperty('transform','scale(0.50)','important');"
+                + "f.style.setProperty('transform-origin','top left','important');"
+                + "f.style.setProperty('width','200%','important');"
+                + "f.style.setProperty('height','200%','important');"
                 + "}"
                 + "})();";
         view.evaluateJavascript(js, null);
