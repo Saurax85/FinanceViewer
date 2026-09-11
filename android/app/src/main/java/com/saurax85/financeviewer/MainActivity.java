@@ -106,7 +106,7 @@ public class MainActivity extends Activity {
                 + "if(!s){"
                 + "s=document.createElement('style');"
                 + "s.id='financeviewer-apk-content-scale';"
-                + "s.textContent='.content *{font-size:94%!important;}';"
+                + "s.textContent='.content *{font-size:92%!important;}';"
                 + "document.head.appendChild(s);"
                 + "}"
                 + "})();";
