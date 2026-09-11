@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
     private void hideAppsScriptBanner(WebView view) {
         // Apps Script can inject a small warning banner above HtmlService pages.
         // Try to remove only that banner; do not modify Mobile.html.
-        String js = "(function(){";
+        String js = "(function(){"
                 + "function hide(){"
                 + "var els=document.querySelectorAll('*');"
                 + "for(var i=0;i<els.length;i++){"
