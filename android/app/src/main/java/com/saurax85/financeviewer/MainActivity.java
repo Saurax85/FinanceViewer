@@ -47,12 +47,12 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
 
-        // WebView text zoom does not reliably change the explicit CSS pixel
-        // sizes used by FinanceViewer Mobile. Keep it neutral and apply a
-        // deterministic CSS scale after the page has loaded.
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setTextZoom(75);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
 
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -62,7 +62,6 @@ public class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                applyMobileScale(view);
                 hideAppsScriptBanner(view);
             }
         });
@@ -72,8 +71,6 @@ public class MainActivity extends Activity {
         webView.setHorizontalScrollBarEnabled(false);
         webView.setHorizontalFadingEdgeEnabled(false);
 
-        // Android 15 / targetSdk 35 edge-to-edge: keep the content below
-        // the status/camera area and above the navigation area.
         webView.setOnApplyWindowInsetsListener((view, insets) -> {
             int top;
             int bottom;
@@ -98,28 +95,7 @@ public class MainActivity extends Activity {
         webView.loadUrl(URL);
     }
 
-    private void applyMobileScale(WebView view) {
-        // Mobile structure: header -> main -> .content.
-        // CSS zoom recalculates layout at the smaller scale, unlike font-size
-        // overrides. The header/menu is deliberately untouched.
-        String js = "(function(){"
-                + "function apply(){"
-                + "var c=document.querySelector('main .content');"
-                + "if(!c)return;"
-                + "c.style.setProperty('zoom','0.96','important');"
-                + "c.style.setProperty('width','104.166667%','important');"
-                + "}"
-                + "apply();"
-                + "setTimeout(apply,500);"
-                + "setTimeout(apply,1500);"
-                + "setTimeout(apply,3000);"
-                + "})();";
-        view.evaluateJavascript(js, null);
-    }
-
     private void hideAppsScriptBanner(WebView view) {
-        // Apps Script can inject a small warning banner above HtmlService pages.
-        // Remove only that warning; do not modify Mobile.html.
         String js = "(function(){"
                 + "function hide(){"
                 + "var els=document.querySelectorAll('*');"
@@ -156,5 +132,3 @@ public class MainActivity extends Activity {
         }
     }
 }
-
-// Real file update marker: force APK workflow to rebuild this exact source.
